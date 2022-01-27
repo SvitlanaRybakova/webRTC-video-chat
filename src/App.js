@@ -1,10 +1,15 @@
+ import { Route, Routes } from "react-router-dom";
+ import HomePage from './pages/home_page'
+ import RoomPage from './pages/room_page'
 
-
-function App() {
+ function App() {
   return (
-    <div className="App">
-     chat app
-    </div>
+    <>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/room/:id" element={<RoomPage />} />
+      </Routes>
+    </>
   );
 }
 
