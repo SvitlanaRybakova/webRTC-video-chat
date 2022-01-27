@@ -4,15 +4,20 @@ const app = express();
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 const ACTIONS = require("./src/socket/actions");
+const { version, validate } = require("uuid");
 
+console.log("version************", version);
+console.log("validate************", validate);
 const PORT = process.env.PORT || 3001;
 
 // get all available socket's connection
 function getClientRooms() {
   const { rooms } = io.sockets.adapter;
-  console.log("ROOMS****************", rooms);
-  console.log(Array.from(rooms.keys()));
-  return Array.from(rooms.keys());
+
+  // exclude rooms created by default (returns only these wich user creates themself)
+  return Array.from(rooms.keys()).filter(
+    (roomID) => validate(roomID) && version(roomID) === 4
+  );
 }
 
 // if apears a new socket connection, share the information about the with all rooms
@@ -67,7 +72,6 @@ io.on("connection", (socket) => {
       // get all clients in room
       const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
 
-      
       clients.forEach((clientID) => {
         // send all clients action to disconnect
         io.to(clientID).emit(ACTIONS.REMOVE_PEER, {
@@ -76,13 +80,13 @@ io.on("connection", (socket) => {
         // disconnect themself
         socket.emit(ACTIONS.REMOVE_PEER, {
           peerID: clientID,
-        })
+        });
       });
 
-      socket.leave(roomId)
+      socket.leave(roomId);
     });
 
-    shareRoomsInfo()
+    shareRoomsInfo();
   }
   // if a user decided to leave video-chat
   socket.on(ACTIONS.LEAVE, leaveRoom);
