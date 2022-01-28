@@ -1,4 +1,4 @@
-import React, {useRef} from 'react'
+import React from 'react'
 import {useParams} from 'react-router-dom'
 import useWebRTC from '../../hooks/useWebRTC'
 import {LOCAL_VIDEO} from '../../hooks/useWebRTC'
